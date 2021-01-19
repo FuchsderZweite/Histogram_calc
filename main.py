@@ -8,14 +8,19 @@ import fit
 
 
 
-
+hist_num = 256
+hist_range = [0, 1]
+accumulate = False
 
 # ===== READ IMG ======
-img = cv.imread(r'C:\Users\Sergej\Desktop\abc2.tif', 2)
+data = cv.imread(r'C:\Users\Sergej\Desktop\abc2.tif', 2)
 
-hist_num = 256
-hist_range = [0, 1.0]
-accumulate = False
+
+#hist= cv.calcHist([data], [0], None, hist_num, hist_range, accumulate=accumulate)
+
+
+
+
 '''
 xs = np.arange(hist_num)
 hist= cv.calcHist(img, [0], None, [hist_num], histRange, accumulate=accumulate)
@@ -42,7 +47,9 @@ plt.show()
 # 3.) Generate exponential and gaussian data and histograms.
 #data = np.random.exponential(scale=2.0, size=100000)
 #data2 = np.random.normal(loc=3.0, scale=0.3, size=15000)
-data = cv.calcHist(img, [0], None, [hist_num], hist_range, accumulate=accumulate)
+#data = cv.calcHist([img], [0], None, [hist_num], hist_range)
+#plt.plot(data)
+
 ys = data[:,0]
 bins = np.linspace(0, 256, hist_num)
 data_entries, bins = np.histogram(ys, bins=bins)
@@ -58,9 +65,10 @@ def gaussian(x, mean, amplitude, standard_deviation):
 
 
 # 5.) Fit the function to the histogram data.
-popt, pcov = curve_fit(gaussian, xdata=binscenters, ydata=data_entries)
-print(popt)
-print(pcov)
+best_guess = [1, 1, 1]
+#popt, pcov = curve_fit(gaussian, xdata=binscenters, ydata=data_entries, p0=best_guess)
+#print(popt)
+#print(pcov)
 
 # 6.)
 # Generate enough x values to make the curves look smooth.
@@ -68,8 +76,8 @@ xmin, xmax = plt.xlim()
 xspace = np.linspace(xmin, xmax, 5000)
 
 # Plot the histogram and the fitted function.
-plt.bar(binscenters, data_entries, width=bins[1] - bins[0], color='green', label=r'Histogram entries')
-plt.plot(xspace, gaussian(xspace, *popt), color='red', linewidth=2.5, label=r'Fitted function')
+plt.hist(data.ravel(), hist_num, hist_range)
+#plt.plot(xspace, gaussian(xspace, *popt), color='red', linewidth=2.5, label=r'Fitted function')
 
 # Make the plot nicer.
 plt.xlim(0,hist_num)
@@ -79,7 +87,6 @@ plt.title(r'Test plot')
 plt.legend(loc='best')
 plt.show()
 plt.clf()
-
 
 
 
