@@ -4,17 +4,11 @@ from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
 import cv2 as cv
 
-
-dir = r'C:\Users\Sergej\Desktop\Sample_DATA_Nazila\2020-05-06_experiments\2020-05-06_SNR_meas_step_wedge_spectra'
-
-
+plt.style.use('default')
+working_dir = r'C:\Users\Sergej\Desktop\Sample_DATA_Jakob\2020-08-13-zbl-GFK_Impact_gebogen-40kV-15W-150ms-10mit-nofilt_tifs'
 
 
-def find_first_peak(mu1, mu2):
-    if mu1 < mu2:
-        return mu1
-    else:
-        return mu2
+bins = 100
 
 
 def write_to_file(x_val, file_name):
@@ -24,70 +18,69 @@ def write_to_file(x_val, file_name):
 
 
 def gaussian(x, A, B, mu1, mu2, sig1, sig2):
-    return A*np.exp(-np.power(x - mu1, 2.) / (2 * np.power(sig1, 2.))) + B*np.exp(-np.power(x - mu2, 2.) / (2 * np.power(sig2, 2.)))
+    return A * np.exp(-np.power(x - mu1, 2.) / (2 * np.power(sig1, 2.))) + B * np.exp(
+        -np.power(x - mu2, 2.) / (2 * np.power(sig2, 2.)))
+
+
+def calc_histogram(dir):
+    peaks = []
+    for filename in os.listdir(dir):
+        #img = cv.imread(r'C:\Users\Sergej\Desktop\abc2.tif', 2) # hier muss der Histogram-Rechenr rein
+        img = cv.imread(os.path.join(dir, filename), 2) # hier ist ein Problem. Die Bilder werden als None deklariert -> fehler beim Einlesen
+        ys, xs, patches = plt.hist(img.ravel(), bins=bins)
+        bin_center = np.array([0.5 * (xs[i] + xs[i + 1]) for i in range(len(xs) - 1)])
+        bin_width = xs[1] - xs[0]
+
+        best_guess = [300000, 150000, 1, 1, 1, 0.1]
+        popt, covt = curve_fit(gaussian, xdata=bin_center, ydata=ys, p0=best_guess)
+        A, B, mu1, mu2, sig1, sig2 = popt
+
+        x_value_of_peak = find_first_peak(mu1, mu2)
+
+        peaks = peaks.append(x_value_of_peak)
+
+        #if img is not None:
+        #   images.append(img)
+    return peaks
+
+
+calc_histogram(working_dir)
 
 
 def extract_file_name(dir):
-    return os.path.basename(dir)
+    head, tail = os.path.split(dir)
+    return head, tail
 
 
+def find_first_peak(mu1, mu2):
+    if mu1 < mu2:
+        return mu1
+    else:
+        return mu2
 
-def load_images_from_folder(working_dir):
-    dir = working_dir + '\*\*.tif'
-    images = []
-    for filename in os.listdir(dir):
-        img = cv.imread(os.path.join(dir,filename))
-        if img is not None:
-            images.append(img)
-    return images
-
-
-#abc = load_images_from_folder(dir)
 
 
 # ===== READ IMG ======
 img = cv.imread(r'C:\Users\Sergej\Desktop\abc2.tif', 2)
-bins = 200
-ys, xs, patches = plt.hist(img.ravel(), bins=bins)
-bin_center = np.array([0.5 * (xs[i] + xs[i+1]) for i in range(len(xs)-1)])
 
-best_guess = [1, 1, 1, 1, 1,1]
+ys, xs, patches = plt.hist(img.ravel(), bins=bins)
+bin_center = np.array([0.5 * (xs[i] + xs[i + 1]) for i in range(len(xs) - 1)])
+bin_width = xs[1] - xs[0]
+
+
+best_guess = [300000, 150000, 1, 1, 1, 0.1]
 popt, covt = curve_fit(gaussian, xdata=bin_center, ydata=ys, p0=best_guess)
 A, B, mu1, mu2, sig1, sig2 = popt
 
 
-
-
 x_value_of_peak = find_first_peak(mu1, mu2)
-#write_to_file(x_value_of_peak)
-
-
+#projections = extract_file_name(dir)
 
 
 xspace = np.linspace(0, 1, 2000)
-plt.bar(bin_center, ys, width=xs[1] - xs[0], color='navy', label=r'')
-plt.plot(xspace, gaussian(xspace, *popt), color='red', linewidth=2.5, label=r'gaussian fit')
+plt.bar(bin_center, ys, width=bin_width, color='green', label=r'')
+plt.plot(xspace, gaussian(xspace, *popt), color='red', linestyle='-', linewidth=2.5, alpha=0.7, label=r'gaussian fit')
 plt.title('Histogram')
 plt.xlabel('bins (size: ')
 plt.ylabel('count $N$')
-
-#plt.hist(ys, xs)
 plt.show()
-
-
-
-
-
-
-
-
-'''
-bins = np.arange(0, 256, 10) # fixed bin size
-#plt.xlim([min(img_sorted)-5, max(img_sorted)+5])
-plt.hist(img_sorted, bins=bins, alpha=0.5)
-plt.title('Random Gaussian data (fixed bin size)')
-plt.xlabel('variable X (bin size = 5)')
-plt.ylabel('count')
-
-plt.show()
-'''
