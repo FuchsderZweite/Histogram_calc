@@ -1,80 +1,89 @@
 import numpy as np
+from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
 import cv2 as cv
-
-
-
-def find_min_max(img):
-    min = np.amin(img)
-    max = np.amax(img)
-    print(min)
-    print(max)
-    print()
-    return min, max
+import fit
 
 
 
 
+
+
+
+# ===== READ IMG ======
 img = cv.imread(r'C:\Users\Sergej\Desktop\abc2.tif', 2)
 
-histSize = 256
-histRange = (0, 1)
+hist_num = 256
+hist_range = [0, 1.0]
 accumulate = False
-
-
-hist = cv.calcHist(img, [0], None, [histSize], histRange, accumulate=accumulate)
-
-hist_list = [val[0] for val in hist]
-
-#Generate a list of indices
-indices = list(range(0, 256))
-
-#Descending sort-by-key with histogram value as key
-hist_sorted = [(x,y) for y,x in sorted(zip(hist_list,indices), reverse=True)]
-
-index_of_highest_peak = hist_sorted[0][0]
-
-#Index of second highest peak in histogram
-index_of_second_highest_peak = hist_sorted[1][0]
-
-print(index_of_highest_peak)
-print(index_of_second_highest_peak)
-
-
-plt.hist(img.ravel(),256,histRange); plt.show()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 '''
-
-
-    
-def draw_image_histogram(image, channels, color='k'):
-    hist = cv.calcHist([image], channels, None, [256], [0, 256])
-    plt.plot(hist)
-    plt.xlim([0, 256])
+xs = np.arange(hist_num)
+hist= cv.calcHist(img, [0], None, [hist_num], histRange, accumulate=accumulate)
+ys = hist[:,0]
 
 
 
-gray_image = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-histogram = cv.calcHist([gray_image], [0], None, [256], [0, 256])
-plt.plot(histogram, color='k')
+
+# ===== FIT =====
+#popt, pcov = curve_fit(gaussian, xs, ys)
+#y_line = gaussian(xs, *popt)
+
+
+
+
+# ===== PLOT ======
+plt.hist(hist, histRange, color='green')
+#plt.plot(xs, y_line, '--', color='red', label="gaussian fit")
+#plt.legend(loc='upper right')
 plt.show()
 '''
+
+
+# 3.) Generate exponential and gaussian data and histograms.
+#data = np.random.exponential(scale=2.0, size=100000)
+#data2 = np.random.normal(loc=3.0, scale=0.3, size=15000)
+data = cv.calcHist(img, [0], None, [hist_num], hist_range, accumulate=accumulate)
+ys = data[:,0]
+bins = np.linspace(0, 256, hist_num)
+data_entries, bins = np.histogram(ys, bins=bins)
+
+
+# 4.) Add histograms of exponential and gaussian data.
+binscenters = np.array([0.5 * (bins[i] + bins[i+1]) for i in range(len(bins)-1)])
+
+
+# ==== FIT FUNC ========
+def gaussian(x, mean, amplitude, standard_deviation):
+    return amplitude * np.exp( - ((x - mean) / standard_deviation) ** 2)
+
+
+# 5.) Fit the function to the histogram data.
+popt, pcov = curve_fit(gaussian, xdata=binscenters, ydata=data_entries)
+print(popt)
+print(pcov)
+
+# 6.)
+# Generate enough x values to make the curves look smooth.
+xmin, xmax = plt.xlim()
+xspace = np.linspace(xmin, xmax, 5000)
+
+# Plot the histogram and the fitted function.
+plt.bar(binscenters, data_entries, width=bins[1] - bins[0], color='green', label=r'Histogram entries')
+plt.plot(xspace, gaussian(xspace, *popt), color='red', linewidth=2.5, label=r'Fitted function')
+
+# Make the plot nicer.
+plt.xlim(0,hist_num)
+plt.xlabel(r'bins')
+plt.ylabel(r'counts N')
+plt.title(r'Test plot')
+plt.legend(loc='best')
+plt.show()
+plt.clf()
+
+
+
+
+
+
 
 
