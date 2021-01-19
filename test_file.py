@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 import cv2 as cv
 
 
-def gaussian(x1, x2, mu1, mu2, sig1, sig2):
-    return np.exp(-np.power(x1 - mu1, 2.) / (2 * np.power(sig1, 2.))) + np.exp(-np.power(x2 - mu2, 2.) / (2 * np.power(sig2, 2.)))
+def gaussian(x, A, B, mu1, mu2, sig1, sig2):
+    return A*np.exp(-np.power(x - mu1, 2.) / (2 * np.power(sig1, 2.))) + B*np.exp(-np.power(x - mu2, 2.) / (2 * np.power(sig2, 2.)))
 
 
 
@@ -13,11 +13,19 @@ def gaussian(x1, x2, mu1, mu2, sig1, sig2):
 img = cv.imread(r'C:\Users\Sergej\Desktop\abc2.tif', 2)
 bins = 100
 ys, xs, patches = plt.hist(img.ravel(), bins=bins)
+bin_center = np.array([0.5 * (xs[i] + xs[i+1]) for i in range(len(xs)-1)])
+
+best_guess = [1000, 1000, 1, 1, 1,1]
+popt, covt = curve_fit(gaussian, xdata=bin_center, ydata=ys, p0=best_guess)
+
+# Generate enough x values to make the curves look smooth.
+xspace = np.linspace(0, 1, 1000)
+plt.bar(bin_center, ys, width=xs[1] - xs[0], color='navy', label=r'Histogram entries')
+plt.plot(xspace, gaussian(xspace, *popt), color='darkorange', linewidth=2.5, label=r'Fitted function')
 
 
 
-
-plt.hist(ys, xs)
+#plt.hist(ys, xs)
 plt.show()
 
 
