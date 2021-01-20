@@ -5,10 +5,18 @@ import matplotlib.pyplot as plt
 import cv2 as cv
 
 plt.style.use('default')
-working_dir = r'C:\Users\Sergej\Desktop\Sample_DATA_Jakob\2020-08-13-zbl-GFK_Impact_gebogen-40kV-15W-150ms-10mit-nofilt_tifs'
-
+#working_dir = r'C:\Users\Sergej\Desktop\Sample_DATA_Jakob\2020-08-13-zbl-GFK_Impact_gebogen-40kV-15W-150ms-10mit-nofilt_tifs'
+working_dir = r''
 
 bins = 100
+
+
+def find_peak(bins):
+    sorted_bins = bins.sort()
+    p1 = sorted_bins[-1]
+    p2 = sorted_bins[-2]
+    # read the ys values and find the highest two bins -> best guess values.
+    return
 
 
 def write_to_file(x_val, file_name):
