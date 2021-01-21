@@ -12,8 +12,6 @@ def gaussian(x, A, B, mean1, mean2, sigma1, sigma2):
 
 
 bins = 256
-
-
 img_path = r'C:\Users\Sergej\Desktop\Sample_DATA_Jakob\2020-08-13-zbl-GFK_Impact_gebogen-40kV-15W-150ms-10mit-nofilt_tifs\GFK_gebogen-40kv_0540.tif'
 
 
