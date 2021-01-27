@@ -1,6 +1,9 @@
 import numpy as np
 
-class Fit:
+class Fit(func, params):
+    def __init__(self, func, params):
+        self.func = func
+
 
     def fit_sin(x, A, B, C, D):
         return A * np.sin(C * x + D) + B
