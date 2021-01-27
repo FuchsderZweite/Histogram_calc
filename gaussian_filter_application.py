@@ -7,8 +7,9 @@ import matplotlib.pyplot as plt
 import time
 
 
-working_dir = r'C:\Users\Sergej\Desktop\Sample_DATA_Jakob_SMALL\2020-08-13-zbl-GFK_Impact_gebogen-40kV-15W-150ms-10mit-nofilt_tifs' # prep dataset (20 images)
+#working_dir = r'C:\Users\Sergej\Desktop\Sample_DATA_Jakob_SMALL\2020-08-13-zbl-GFK_Impact_gebogen-40kV-15W-150ms-10mit-nofilt_tifs' # prep dataset (20 images)
 #working_dir = r'C:\Users\Sergej\Desktop\Sample_DATA_Jakob\2020-08-13-zbl-GFK_Impact_gebogen-40kV-15W-150ms-10mit-nofilt_tifs' # full dataset (2.4k images)
+working_dir =r'C:\Users\Rechenfuchs\Documents\GitHub\dummy_data_for_hist_calc'
 
 sigma = 10
 step = 1
@@ -52,8 +53,6 @@ def add_filter(dir, sigma, median_size):
             progress = 100*(num1/num2)
             raw_img = cv.imread(os.path.join(dir, filename), 2)
             median_filtered_img = median_filter(raw_img, median_size)                   # 1.1 sec
-            cv.imshow('median filtered image (file: {})'.format(filename), median_filtered_img)
-            cv.waitKey(0)
             gaussian_filtered_img = gaussian_filter(median_filtered_img, sigma=sigma)   # 0.3 sec
             list_min_val.append(np.amin(gaussian_filtered_img))
             list_filenames.append(filename)
