@@ -1,4 +1,5 @@
 from scipy.ndimage import gaussian_filter, median_filter
+from scipy.optimize import curve_fit
 from scipy.signal import argrelextrema
 import numpy as np
 import cv2 as cv
@@ -36,8 +37,9 @@ def plot_data(plot_values, step):
 def fit_sin(x_values, A, B, C, D):
     return A*np.sin(C*x_values + D) + B
 
-def fit_poly():
-    pass
+
+def polynom_fit(x, A, B, C, D, E, F):
+    return A*x**5 + B*x**4 + C*x**3 + D*x**2 + E*x + F
 
 
 
@@ -65,10 +67,22 @@ def add_filter(dir, sigma, median_size):
         print('File not fount! Check the working directory.')
     arr_min_val = np.array(list_min_val)
     arr_filename = np.array(list_filenames)
-    return arr_min_val, arr_filename
+    return arr_min_val, arr_filename    # brauche (zum fitten) nicht die Dateinamen sondern die y-Werte!
+
 
 
 plot_values = add_filter(*parameter_set)
 
-plot_data(plot_values, step)
+
+
+ydata, xdata = plot_values
+x = xdata[::step]
+y = ydata[::step]
+
+best_guess = [1, 1, 1, 1, 1, 1]
+popt, covt = curve_fit(polynom_fit, xdata=x, ydata=y, p0=best_guess)
+A, B, mu1, mu2, sig1, sig2 = popt
+
+
+#plot_data(plot_values, step)
 

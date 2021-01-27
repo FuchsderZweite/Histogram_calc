@@ -6,7 +6,7 @@ import cv2 as cv
 
 plt.style.use('default')
 #working_dir = r'C:\Users\Sergej\Desktop\Sample_DATA_Jakob\2020-08-13-zbl-GFK_Impact_gebogen-40kV-15W-150ms-10mit-nofilt_tifs'
-working_dir = r''
+working_dir =r'C:\Users\Rechenfuchs\Documents\GitHub\dummy_data_for_hist_calc'
 
 bins = 100
 
@@ -29,7 +29,14 @@ def gaussian(x, A, B, mu1, mu2, sig1, sig2):
     return A * np.exp(-np.power(x - mu1, 2.) / (2 * np.power(sig1, 2.))) + B * np.exp(
         -np.power(x - mu2, 2.) / (2 * np.power(sig2, 2.)))
 
+def polynom_fit(x, A, B, C, D, E, F):
+    return A*x**5 + B*x**4 +C*x**3 +D*x**2 +E*x + F
 
+
+
+
+
+'''
 def calc_histogram(dir):
     peaks = []
     for filename in os.listdir(dir):
@@ -92,3 +99,4 @@ plt.title('Histogram')
 plt.xlabel('bins (size: ')
 plt.ylabel('count $N$')
 plt.show()
+'''
