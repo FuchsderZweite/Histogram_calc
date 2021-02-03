@@ -16,11 +16,12 @@ median_size=5
 parameter_set = (dir_source, sigma, median_size)
 
 
-def poly_X(x, *p):
+def polinomial(x, *p):
     poly = 0.
-    for i, n in enumerate(p):
-        poly += n * x ** i
+    for n, A in enumerate(p):
+        poly += A * x ** n
     return poly
+
 
 def func_8(x, params):
     n = 8
@@ -44,14 +45,6 @@ def func_5(x, params):
            params[4]*x**(n-4)+ params[n]
 
 
-
-
-def polynomial(x, *p):
-    """Polynomial fitting function of arbitrary degree."""
-    poly = 0.
-    for i, n in enumerate(p):
-        poly += n * x**i
-    return poly
 
 #def poly(x, params):
 #    return params[0]*x**3 + params[1]*x**2 + params[2]*x + params[3]
@@ -114,13 +107,60 @@ def rearrange_data(xdata):
 
 
 x, y = add_filter(*parameter_set)
-p0_4 = [1.0**(-5), -7.0**(-4), 0.01, -0.1, 0.3]
-p0_5 = [7.0**(-6), 5.0**(-5), 5.0**(-4), 1.0**(-3), 1.0**(-2), 1.0**(-1)]
-p0_6 = [-1.0**(-7), -5.0**(-4), 0.001, 0.001, 0.001, 0.001, 0.1]
-p0_7 = [-1.0**(-7), 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.1]
-p0_10 = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
+
+max_poly_size = np.arange(0, 16, 1)
+def arbitrary_poly(x, *params):
+    return sum([p*(x**i) for i, p in enumerate(params)])
+
+yfit = np.empty()
+for d in max_poly_size:
+    p0 = [1] * (d + 1)
+    popt, pcov = curve_fit(arbitrary_poly, x, y, p0=[1]*(d+1))
+    yfit = np.append(yfit, *popt, axis=0)
+
+    print('test')
+    #yfit[d] = arbitrary_poly(x, *popt)
 
 
+
+
+
+#p0_4 = [1.0**(-5), -7.0**(-4), 0.01, -0.1, 0.3]
+#p0_5 = [7.0**(-6), 5.0**(-5), 5.0**(-4), 1.0**(-3), 1.0**(-2), 1.0**(-1)]
+#p0_6 = [-1.0**(-7), -5.0**(-4), 0.001, 0.001, 0.001, 0.001, 0.1]
+#p0_7 = [-1.0**(-7), 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.1]
+#p0_10 = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
+
+#max_poly_size = np.arange(0, 16, 1)
+#coeffs_ = []
+#var_matrix_ = []
+
+
+
+
+
+#for i in max_poly_size:
+#    p0 = np.full(i, 0.1)
+#    if p0.size < 1:
+#        pass
+#    else:
+#        popt, pcov = curve_fit(polinomial, x, y, p0=p0)
+#        print(popt)
+
+#for j in popt:
+#    coeffs_[i] = popt[j]
+#    coeffs_ = np.array(coeffs_)
+
+
+
+
+
+
+
+
+
+
+'''
 coeffs4, var_matrix4 = curve_fit(poly4, x, y, p0=p0_4)
 coeffs5, var_matrix5 = curve_fit(poly5, x, y, p0=p0_5)
 coeffs6, var_matrix6 = curve_fit(poly6, x, y, p0=p0_6)
@@ -128,68 +168,28 @@ coeffs7, var_matrix7 = curve_fit(poly7, x, y, p0=p0_7)
 coeffs10, var_matrix10 = curve_fit(poly10, x, y, p0=p0_10)
 
 
-yfit4 = poly4(x, *coeffs4)
+yfit[i] = poly4(x, *coeffs4)
 yfit5 = poly5(x, *coeffs5)
 yfit6 = poly6(x, *coeffs6)
 yfit7 = poly7(x, *coeffs7)
 yfit10 = poly10(x, *coeffs10)
+yfit20 = polinomial(x, *coeffs_)
+'''
 
-
-#x, y = rearrange_data(plot_values)
-#fit_values = polynom_fit(x, y)
-#coeffs7 = np.polynomial.polynomial.polyfit(x, y, 7)
-#coeffs7 = np.polyfit(x, y, 7, full=True)
-#parameter8 = np.polyfit(x, y, 8)
-#parameter6 = np.polyfit(x, y, 6)
-#parameter5 = np.polyfit(x, y, 5)
 
 color = ['r', 'g', 'b', 'k', 'y', 'm', 'c']
 linewidth = 2.5
 plt.scatter(x, y, marker='o', color='black', alpha=0.7, label='data')
-plt.plot(x, yfit4, c=color[1], linestyle='-', linewidth=linewidth, alpha=0.7, label='$x^{4}$')
-plt.plot(x, yfit5, c=color[2], linestyle='-', linewidth=linewidth, alpha=0.7, label=r'$x^{5}$')
-#plt.plot(x, yfit6, c=color[3], linestyle='-', linewidth=linewidth, alpha=0.7, label='$x^{6}$')
-plt.plot(x, yfit7, c=color[4], linestyle='-', linewidth=linewidth, alpha=0.7, label=r'$x^{7}$')
-plt.plot(x, yfit10, c=color[5], linestyle='-', linewidth=linewidth, alpha=0.7, label=r'$x^{10}$')
-#plt.plot(x, yfit_, color='black', linestyle='--', linewidth=2.5, alpha=0.7, label=r'$x^{222}$')
-#plt.plot(x, func_5(x, parameter5), color='blue', linestyle='-', linewidth=2.5, alpha=0.7, label=r'$x^{5}$')
-#plt.plot(x, y, color='purple', linestyle='-', linewidth=2.5, alpha=0.7, label=r'data')
+for i in max_poly_size:
+    plt.plot(x, yfit[i], c=color[1], linestyle='-', linewidth=linewidth, alpha=0.7, label='$x^{}$'.format(i))
+
+#plt.plot(x, yfit5, c=color[2], linestyle='-', linewidth=linewidth, alpha=0.7, label=r'$x^{5}$')
+#plt.plot(x, yfit7, c=color[4], linestyle='-', linewidth=linewidth, alpha=0.7, label=r'$x^{7}$')
+#plt.plot(x, yfit10, c=color[5], linestyle='-', linewidth=linewidth, alpha=0.7, label=r'$x^{10}$')
+#plt.plot(x, yfit20, c=color[6], linestyle='-', linewidth=linewidth, alpha=0.7, label=r'$x^{20}$')
+
 plt.savefig('min_values_sigma{}_median{}.png'.format(sigma, median_size), dpi=300)
 plt.legend()
 plt.xlabel('angle in (°)')
 plt.ylabel('Min. value of the intensity + fits')
 plt.show()
-
-
-
-'''
-y_data, x_data = plot_values
-x = x_data[::step]
-y = y_data[::step]
-
-
-
-fit3 = np.polyfit(x, y, 3)
-fit4 = np.polyfit(x, y, 4)
-fit5 = np.polyfit(x, y, 5)
-fit6 = np.polyfit(x, y, 6)
-
-plt.scatter(x, y, marker='o', alpha=0.7, label='sigma ={} \n median size = {}'.format(sigma, median_size))
-#plt.plot(x, poly3(x, fit3), color='red', linestyle='-', linewidth=2.5, alpha=0.7, label=r'$x^{3}$')
-#plt.plot(x, poly4(x, fit4), color='orange', linestyle='-', linewidth=2.5, alpha=0.7, label=r'$x^{4}$')
-#plt.plot(x, poly5(x, fit5), color='blue', linestyle='-', linewidth=2.5, alpha=0.7, label=r'$x^{5}$')
-#plt.plot(x, poly6(x, fit6), color='purple', linestyle='-', linewidth=2.5, alpha=0.7, label=r'$x^{6}$')
-
-plt.title(r'Minimum(Intensity) as a function of the projection')
-plt.legend()
-plt.xlabel('x')
-plt.ylabel('Min. value of the intensity + fits')
-plt.savefig('min_values_develop_version_sigma{}_median{}.png'.format(sigma, median_size), dpi=300)
-plt.show()
-
-
-
-#poly3, poly4, poly5, poly6 = fit_values
-
-#plot_data(plot_values, fit_values)
-'''
