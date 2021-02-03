@@ -11,11 +11,16 @@ def main():
     fit_function = 1                                                        # 1 for polynomial
     parameter_set = median_kernel_size, gaussian_kernel_size, fit_function, dir_raw, dir_processed, dir_save
 
-    # create an object which carries fit parameters for an polynomial (x^10)
     fit_x10 = fit.Fit(*parameter_set)
     x, y, yfit, coeffs, degree = fit_x10.get_data()
+    min, max = fit_x10.get_min_max(x, yfit)
+    print
+
+
+
     plot_x10 = plotting_file.Plot(x, y, yfit, coeffs, degree)
     plot_x10.plot()
+
 
 
 if __name__ == '__main__':

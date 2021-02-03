@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.ndimage import gaussian_filter, median_filter
+from scipy.signal import argrelextrema
 from scipy.optimize import curve_fit
 import os
 import cv2 as cv
@@ -44,6 +45,11 @@ class Fit:
         coeff, pcov = curve_fit(self.polynomial, x, y, p0=self.p0_10)
         yfit = self.polynomial(x, *coeff)
         return x, y, yfit, coeff, self.degree
+
+    def get_min_max(self,x, yfit):
+        maxima = argrelextrema(yfit, np.greater)  # (array([1, 3, 6]),)
+        minima = argrelextrema(yfit, np.less)  # (array([2, 5, 7]),)
+        return minima, maxima
 
     def polynomial(self, x, *coeff):
         return coeff[0]*x**10 + coeff[1]*x**9 + coeff[2]*x**8 + coeff[3]*x**7 \
