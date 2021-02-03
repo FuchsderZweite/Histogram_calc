@@ -14,7 +14,7 @@ def main():
     # create an object which carries fit parameters for an polynomial (x^10)
     fit_x10 = fit.Fit(*parameter_set)
     x, y, yfit, coeffs, degree = fit_x10.get_data()
-    plot_x10 = plotting_file.Plot(x, y, yfit, *coeffs, degree)
+    plot_x10 = plotting_file.Plot(x, y, yfit, coeffs, degree)
     plot_x10.plot()
 
 
