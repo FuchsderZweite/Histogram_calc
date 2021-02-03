@@ -1,29 +1,22 @@
 import numpy as np
-import os
-from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
-import cv2 as cv
 
-num_of_sin = np.arange(6)
-coeff_A = np.array([1,2,3,4,5,6,7,8,9])
-coeff_B = np.array([3,1,6,1,1,1,6,8,9])
-coeff_C = np.array([3,1,6,1,1,1,6,8,9])
-coeff_D = np.array([3,1,6,1,1,1,6,8,9])
-coeffs = np.row_stack((coeff_A, coeff_B, coeff_C, coeff_D))
+class Plot:
 
-print(coeffs)
-print(coeffs.shape)
+color = ['r', 'g', 'b', 'k', 'y', 'm', 'c']
+linewidth = 2.5
+plt.scatter(x, y, marker='o', color='black', alpha=0.7, label='data')
+for i in max_poly_size:
+    plt.plot(x, yfit[i], c=color[1], linestyle='-', linewidth=linewidth, alpha=0.7, label='$x^{}$'.format(i))
 
+#plt.plot(x, yfit5, c=color[2], linestyle='-', linewidth=linewidth, alpha=0.7, label=r'$x^{5}$')
+#plt.plot(x, yfit7, c=color[4], linestyle='-', linewidth=linewidth, alpha=0.7, label=r'$x^{7}$')
+#plt.plot(x, yfit10, c=color[5], linestyle='-', linewidth=linewidth, alpha=0.7, label=r'$x^{10}$')
+#plt.plot(x, yfit20, c=color[6], linestyle='-', linewidth=linewidth, alpha=0.7, label=r'$x^{20}$')
 
-
-def gaussian(x, A, B, mean1, mean2, sigma1, sigma2):
-    return A * np.exp(-np.power(x - mean1, 2.) / (2 * np.power(sigma1, 2.))) + \
-           B * np.exp(-np.power(x - mean2, 2.) / (2 * np.power(sigma2, 2.)))
-
-
-def sum_of_sin(x, coeffs):
-    sum_of_sin = 0.0
-    for i in coeffs.size:
-        sum_of_sin = coeffs[0:i] * np.sin(coeffs[1:i] * x + coeffs[2:i]) + coeffs[3:i]
-    return sum_of_sin
+plt.savefig('min_values_sigma{}_median{}.png'.format(sigma, median_size), dpi=300)
+plt.legend()
+plt.xlabel('angle in (°)')
+plt.ylabel('Min. value of the intensity + fits')
+plt.show()
 

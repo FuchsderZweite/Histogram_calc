@@ -7,8 +7,9 @@ import os
 import matplotlib.pyplot as plt
 
 
-dir_source = r'C:\Users\Sergej\Desktop\Sample_DATA_Jakob_SMALL\240_binned4x4' # prep dataset (240 images, binned 2x2)
+dir_source = r'C:\Users\Sergej\Desktop\Sample_DATA_Jakob_SMALL\240_binned4x4'   #prep dataset (240 images, binned 2x2)
 dir_save = r'C:\Users\Sergej\Desktop\Sample_DATA_Jakob_SMALL\processed'
+dir_source = r'C:\Users\Rechenfuchs\Desktop\jakobs_data\raw'                    #dataset (240 images)
 
 sigma = 10
 step = 1
