@@ -17,11 +17,13 @@ median_size=5
 parameter_set = (dir_source, sigma, median_size)
 
 
+
 def polinomial(x, *p):
     poly = 0.
     for n, A in enumerate(p):
         poly += A * x ** n
     return poly
+
 
 
 def func_8(x, params):
