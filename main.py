@@ -14,8 +14,8 @@ def main():
     fit_x10 = fit.Fit(*parameter_set)
     x, y, yfit, coeffs, degree = fit_x10.get_data()
     min, max = fit_x10.get_min_max(x, yfit)
-    print
-
+    print('The minumum values are: {}'.format(min))
+    print('The maximum values are: {}'.format(max))
 
 
     plot_x10 = plotting_file.Plot(x, y, yfit, coeffs, degree)
