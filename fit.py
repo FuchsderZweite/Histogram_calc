@@ -79,9 +79,11 @@ class Fit:
         # gehe durch beide Listen und finde zum ersten Extrema x0 den darauffolgenden x1 (unabhaengig von min oder max)
         # ziehe diese Extrema von einander ab und teile den Abstand in aequidistante Abstaende
         intersept_minor = []
+        #n = np.arange(arr_inter_major[i + 1], arr_inter_major[i], n)
         for i in range(len(arr_inter_major)-1):
             indx = abs(arr_inter_major[i+1] - arr_inter_major[i])/n
-            intersept_minor.append(x[0][i]+ indx)
+            abc = np.arange(arr_inter_major[i+1], arr_inter_major[i]+1, n)
+            intersept_minor.append(n*(arr_inter_major[i] + abc))
         arr_inter_minor = np.array(intersept_minor)
 
         #for i in arr_maxima, arr_minima:
