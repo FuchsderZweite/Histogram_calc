@@ -59,12 +59,12 @@ class Fit:
         self.x, self.y = self.rearrange_data(arr_min_val)                         # y is 1D, but x is 2D (1D for angle and 1D for numbering
         coeff, pcov = curve_fit(self.polynomial, self.x[0], self.y, p0=self.p0_10)
         self.yfit = self.polynomial(self.x[0], *coeff)
-        self.xminima, self.xmaxima, self.samples_major = self.get_min_max(self.x, self.yfit)
+        self.xminima, self.xmaxima, self.samples_major, self.samples_minor = self.get_min_max(self.x, self.yfit)
         self.plot()
-        return self.xminima, self.xmaxima, self.samples_major
+        return self.xminima, self.xmaxima, self.samples_major, self.samples_minor
 
     def get_min_max(self, x, yfit):
-        n_intersept = 5
+        n = 5
         arr_maxima = argrelextrema(yfit, np.greater)
         arr_minima = argrelextrema(yfit, np.less)
         arr_extrema = np.concatenate((arr_minima, arr_maxima), axis=None)
@@ -78,9 +78,11 @@ class Fit:
 
         # gehe durch beide Listen und finde zum ersten Extrema x0 den darauffolgenden x1 (unabhaengig von min oder max)
         # ziehe diese Extrema von einander ab und teile den Abstand in aequidistante Abstaende
-        #for i in arr_extrema:
-        #    indx = abs(arr_extrema[i+1] - arr_extrema[i])/n
-
+        intersept_minor = []
+        for i in range(len(arr_inter_major)-1):
+            indx = abs(arr_inter_major[i+1] - arr_inter_major[i])/n
+            intersept_minor.append(x[0][i]+ indx)
+        arr_inter_minor = np.array(intersept_minor)
 
         #for i in arr_maxima, arr_minima:
         #   x_minima = x_angle[i] == x
@@ -90,7 +92,7 @@ class Fit:
         #n_maxima = len(maxima)
 
 
-        return arr_minima, arr_maxima, arr_inter_major
+        return arr_minima, arr_maxima, arr_inter_major, arr_inter_minor
 
     def polynomial(self, x, *coeff):
         return coeff[0] * x ** 10 + coeff[1] * x ** 9 + coeff[2] * x ** 8 + coeff[3] * x ** 7 \
@@ -118,9 +120,9 @@ class Fit:
         axis_font = 14
         plt.scatter(self.x[0], self.y, marker='o', color='black', alpha=0.7, label='data')
         plt.plot(self.x[0], self.yfit, c=color[5], linestyle='-', linewidth=linewidth, alpha=0.7, label='$x^{}$'.format(self.degree))
-        plt.vlines(x=self.samples_major, ymin=0, ymax=figsize[0], colors='black', ls='-', alpha=0.6, lw=5, label='found minima')
-        plt.vlines(x=self.samples_major, ymin=0, ymax=figsize[0], colors='black', ls='-', alpha=0.6, lw=5, label='found maxima')
-        #plt.vlines(x=self.samples_major, ymin=0, ymax=self.y, colors='gray', ls='--', lw=2, label='equally spaced sample points')
+        plt.vlines(x=self.samples_major, ymin=0, ymax=figsize[0], colors='gray', ls='-', alpha=0.6, lw=5, label='found minima')
+        plt.vlines(x=self.samples_major, ymin=0, ymax=figsize[0], colors='gray', ls='-', alpha=0.6, lw=5, label='found maxima')
+        plt.vlines(x=self.samples_minor, ymin=0, ymax=figsize[0], colors='gray', ls='--', alpha=0.4,lw=2, label='equally spaced sample points')
         plt.legend()
         plt.tight_layout()
         plt.xlabel('angle in (°)', fontsize=axis_font)
