@@ -4,7 +4,7 @@ bins=100
 
 bin_center = 0.
 bin_width = 0.
-ys = np.array()
+
 
 def calc_histogram(dir):
     peaks = []

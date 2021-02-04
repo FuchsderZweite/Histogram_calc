@@ -3,23 +3,16 @@ import plotting_file
 
 
 def main():
-    dir_raw = r'C:\Users\Rechenfuchs\Desktop\jakobs_data\processed'                    #dataset (240 images)'
-    dir_processed = None                                                                #dataset (240 images)'
-    dir_save = None
-    median_kernel_size = 10
-    gaussian_kernel_size = 5
-    fit_function = 1                                                        # 1 for polynomial
-    parameter_set = median_kernel_size, gaussian_kernel_size, fit_function, dir_raw, dir_processed, dir_save
-
-    fit_x10 = fit.Fit(*parameter_set)
-    x, y, yfit, coeffs, degree = fit_x10.get_data()
-    min, max = fit_x10.get_min_max(x, yfit)
+    dir_to_data = r'C:\Users\Rechenfuchs\Desktop\jakobs_data\processed'
+    dir_to_save = None
+    fit_x10 = fit.Fit(dir_to_data, None)
+    min, max = fit_x10.ge
     print('The minumum values are: {}'.format(min))
     print('The maximum values are: {}'.format(max))
 
 
-    plot_x10 = plotting_file.Plot(x, y, yfit, coeffs, degree)
-    plot_x10.plot()
+    #plot_x10 = plotting_file.Plot(x, y, yfit, coeffs, degree)
+    #plot_x10.plot()
 
 
 
