@@ -85,15 +85,6 @@ class Fit:
             abc = np.arange(arr_inter_major[i+1], arr_inter_major[i]+1, n)
             intersept_minor.append(n*(arr_inter_major[i] + abc))
         arr_inter_minor = np.array(intersept_minor)
-
-        #for i in arr_maxima, arr_minima:
-        #   x_minima = x_angle[i] == x
-        #   x_maxima = x_angle[i]
-        # Was wenn maxima und minima unterschiedliche Anzahl haben (Also wie zu 99% der Faelle)
-        #n_minima = len(minima)
-        #n_maxima = len(maxima)
-
-
         return arr_minima, arr_maxima, arr_inter_major, arr_inter_minor
 
     def polynomial(self, x, *coeff):
