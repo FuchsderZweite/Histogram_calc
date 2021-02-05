@@ -8,12 +8,11 @@ import cv2 as cv
 
 
 class Fit:
-    dir_data = r'C:\Users\Rechenfuchs\Desktop\jakobs_data\processed'  # dataset (240 images)'
-    dir_processed = None  # dataset (240 images)'
-    dir_save = None
+    #dir_data = r'C:\Users\Rechenfuchs\Desktop\jakobs_data\processed'  # dataset (240 images)'
+    #dir_processed = None  # dataset (240 images)'
+    #dir_save = None
     p0_10 = np.empty(11)
     p0_10.fill(0.1)
-    degree = 10
 
     def __init__(self, dir_data=None, dir_save=None, plot_data = None):
         self.median_kernel_size = 10
@@ -23,6 +22,7 @@ class Fit:
         self.dir_rocessed = None
         self.plot_data = plot_data
         self.dir_save = dir_save
+        self.degree = None
         if dir_data is not None:
             self.load_data(self.dir_data)
         else:
@@ -57,13 +57,17 @@ class Fit:
             print('File not fount! Check the working directory.')
         arr_min_val = np.array(list_min_val)
         self.x, self.y = self.rearrange_data(arr_min_val)                         # y is 1D, but x is 2D (1D for angle and 1D for numbering
-        coeff, pcov = curve_fit(self.polynomial, self.x[0], self.y, p0=self.p0_10)
-        self.yfit = self.polynomial(self.x[0], *coeff)
+        coeff, pcov = curve_fit(self.polynomial_x10, self.x[0], self.y, p0=self.p0_10)
+        self.yfit = self.polynomial_x10(self.x[0], *coeff)
         self.xminima, self.xmaxima, self.samples_major, self.samples_minor = self.get_min_max(self.x, self.yfit)
         self.plot()
         return self.xminima, self.xmaxima, self.samples_major, self.samples_minor
 
     def get_min_max(self, x, yfit):
+        """Function which is searching all maxima and minima of a given fit function.
+        :arr_maxima:    an array which holds the found maxima of the fit
+        :arr_minima:    an array which holds the found minima of the fit
+        """
         n = 5
         arr_maxima = argrelextrema(yfit, np.greater)
         arr_minima = argrelextrema(yfit, np.less)
@@ -82,15 +86,20 @@ class Fit:
         #n = np.arange(arr_inter_major[i + 1], arr_inter_major[i], n)
         for i in range(len(arr_inter_major)-1):
             indx = abs(arr_inter_major[i+1] - arr_inter_major[i])/n
-            abc = np.arange(arr_inter_major[i+1], arr_inter_major[i]+1, n)
+            abc = np.arange(arr_inter_major[i+1], arr_inter_major[i]+1, n)      # arange geht wohl nicht weil hier float abstaende vorkommen (Vermutung)
             intersept_minor.append(n*(arr_inter_major[i] + abc))
         arr_inter_minor = np.array(intersept_minor)
         return arr_minima, arr_maxima, arr_inter_major, arr_inter_minor
 
-    def polynomial(self, x, *coeff):
-        return coeff[0] * x ** 10 + coeff[1] * x ** 9 + coeff[2] * x ** 8 + coeff[3] * x ** 7 \
+    def polynomial_x10(self, x, *coeff):
+        self.degree = 10
+        return coeff[0] * x ** 10 + coeff[1] * x ** 9 + coeff[2] * x ** 8 + coeff[3] * x ** 7  \
                + coeff[4] * x ** 6 + coeff[5] * x ** 5 + coeff[6] * x ** 4 + coeff[7] * x ** 3 \
                + coeff[8] * x ** 2 + coeff[9] * x + coeff[10]
+
+    def polynomial(self, x, *coeff):
+        self.degree = len(coeff)-1
+        return sum([p * (x ** i) for i, p in enumerate(coeff)])
 
     def sampling_points(self):
         min = self.minima
@@ -112,10 +121,10 @@ class Fit:
         linewidth = 3.5
         axis_font = 14
         plt.scatter(self.x[0], self.y, marker='o', color='black', alpha=0.7, label='data')
-        plt.plot(self.x[0], self.yfit, c=color[5], linestyle='-', linewidth=linewidth, alpha=0.7, label='$x^{}$'.format(self.degree))
-        plt.vlines(x=self.samples_major, ymin=0, ymax=figsize[0], colors='gray', ls='-', alpha=0.6, lw=5, label='found minima')
-        plt.vlines(x=self.samples_major, ymin=0, ymax=figsize[0], colors='gray', ls='-', alpha=0.6, lw=5, label='found maxima')
-        plt.vlines(x=self.samples_minor, ymin=0, ymax=figsize[0], colors='gray', ls='--', alpha=0.4,lw=2, label='equally spaced sample points')
+        plt.plot(self.x[0], self.yfit, c=color[5], linestyle='-', linewidth=linewidth, alpha=0.7, label='poly $x^{{}}$ fit'.format(self.degree))
+        plt.vlines(x=self.samples_major, ymin=0, ymax=figsize[0], colors='gray', ls='-', alpha=0.6, lw=2, label='found minima')
+        plt.vlines(x=self.samples_major, ymin=0, ymax=figsize[0], colors='gray', ls='-', alpha=0.6, lw=2, label='found maxima')
+        #plt.vlines(x=self.samples_minor, ymin=0, ymax=figsize[0], colors='gray', ls='--', alpha=0.4,lw=2, label='equally spaced sample points')
         plt.legend()
         plt.tight_layout()
         plt.xlabel('angle in (°)', fontsize=axis_font)
